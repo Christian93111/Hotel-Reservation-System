@@ -27,13 +27,23 @@ class Room:
         self.update_room_status_file()
 
     def display_info(self):
-        status = "Available" if self.is_available else "Booked"
-        print(f"Room {self.room_number} - {status}\nRoom Type: {self.room_type}\nPrice per night: {self.price_per_night} PHP\n\n")
+        
+        if self.is_available:
+            status = "Available"
+        else:
+            status = "Booked"
+    
+        print("Room", self.room_number, "-", status)
+        print("Room Type:", self.room_type)
+        print("Price per night:", self.price_per_night, "PHP")
 
     def update_room_status_file(self):
         f = open("room_status.txt", "w")
         for room in rooms:
-            status = "Available" if room.is_available else "Booked"
+            if self.is_available:
+                status = "Available"
+            else: 
+                "Booked"
         f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
         f.close()
 
@@ -43,7 +53,6 @@ def load_room_status():
     try:
         f = open("room_status.txt", "r")
         lines = f.readlines()
-
         for line in lines:
             parts = line.strip().split(", ")
 
@@ -56,7 +65,7 @@ def load_room_status():
                 room = Room(room_number, status == "Available", room_type, price_per_night)
                 rooms.append(room)
 
-            except (IndexError, ValueError) as e:
+            except (IndexError, ValueError):
                 print(f"Skipping invalid room entry: {line.strip()}")
 
     except FileNotFoundError:
@@ -90,9 +99,9 @@ while True:
 
             while True:
                 try:
-                    room = None
                     room_number = int(input("Choose Room Number to Check In: "))
-
+                    
+                    room = None
                     for r in rooms:
                         if r.room_number == room_number:
                             room = r
@@ -176,7 +185,13 @@ while True:
                 email = input("Enter Email Address: ")
 
                 room_number = int(input("Room Number to Check Out: "))
-                room = next((r for r in rooms if r.room_number == room_number), None)
+                
+                room = None
+                for r in rooms:
+                    if r.room_number == int(room_number):
+                        room = r
+                        break
+
 
                 if room:
                     if not room.is_available:
@@ -199,12 +214,15 @@ while True:
                 print("\nPlease enter a valid room number.\n")
 
     elif choice == '3':
-        print("\n------------- Room Status -------------\n")
-        for room in rooms:
-            room.display_info()
+        if rooms:
+            print("\n------------- Room Information -------------\n")
+            for room in rooms:
+                room.display_info()
+        else:
+            print("\nNo room record list found.")
 
     elif choice == '4':
-        print("\nExiting the System. Thank you :).\n")
+        print("\nReturn to the menu...\n")
         break
 
     else:

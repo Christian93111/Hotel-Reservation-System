@@ -1,1 +1,0 @@
-Room 1, Status: Available, Room Type: Single Room, Price per night: 600 PHP

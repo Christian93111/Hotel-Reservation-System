@@ -3,10 +3,10 @@ while True:
     print("1. Employee")
     print("2. Admin")
     print("3. Exit")
-    choice = input("Choose an option: ")
+    choice = input("\nChoose an option: ")
 
     if choice == '1':
-        print("\n--- Employee Login ---")
+        print("\n------------- Employee Login -------------\n")
 
         login_username = input("Enter Name: ")
 
@@ -15,7 +15,7 @@ while True:
             if len(login_password) >= 8:
                 break
             else:
-                print("\nPassword must be at least 8 characters. Please try again.")
+                print("\nPassword must be at least 8 characters or more. Please try again.\n")
 
         login_success = False
 
@@ -30,10 +30,10 @@ while True:
             import staff
 
         else:
-            print("\nLogin failed. Please try again.")
+            print("\nLogin failed. Please try again.\n")
 
     elif choice == '2':
-        print("\n------------- Admin Login -------------")
+        print("\n------------- Admin Login -------------\n")
 
         admin_username = input("Enter Name: ")
 
@@ -42,7 +42,7 @@ while True:
             if len(admin_password) >= 8:
                 break
             else:
-                print("Password must be at least 8 characters. Please try again.")
+                print("\nPassword must be at least 8 characters. Please try again.\n")
 
         login_success = False
 
@@ -53,17 +53,17 @@ while True:
                 break
 
         if login_success:
-            print("\nLogin Success!")
+            print("\nLogin Success!\n")
 
             import admin
             admin.main()
 
         else:
-            print("\nLogin failed. Please try again.")
+            print("\nLogin failed. Please try again.\n")
 
     elif choice == '3':
-        print("\nExiting the system....")
+        print("\nSystem Shutdown....\n")
         break
 
     else:
-        print("\nInvalid option. Please try again.")
+        print("\nInvalid option. Please try again.\n")
