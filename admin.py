@@ -67,7 +67,7 @@ def add_new_room():
             print("\n------------- Room Type -------------\n")
             for key, value in room_types.items():
                 print(f"{key}. {value}")
-            room_type_choice = input("\nEnter the room type number (1-6): ")
+            room_type_choice = input("\nEnter the room type number: ")
 
             if room_type_choice not in room_types:
                 print("\nInvalid room type choice. Please enter a valid number.")
