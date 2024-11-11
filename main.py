@@ -1,3 +1,6 @@
+import staff
+import admin
+
 while True:
     print("\n------------- Hotel Reservation System -------------\n")
     print("1. Employee")
@@ -6,16 +9,16 @@ while True:
     choice = input("\nChoose an option: ")
 
     if choice == '1':
-        print("\n------------- Employee Login -------------\n")
+        print("\n------------- Employee Login -------------")
 
-        login_username = input("Enter Name: ")
+        login_username = input("\nEnter Name: ")
 
         while True:
-            login_password = input("Enter Password (8 characters or more): ")
+            login_password = input("\nEnter Password (8 characters or more): ")
             if len(login_password) >= 8:
                 break
             else:
-                print("\nPassword must be at least 8 characters or more. Please try again.\n")
+                print("\nPassword must be at least 8 characters or more. Please try again.")
 
         login_success = False
 
@@ -27,22 +30,22 @@ while True:
 
         if login_success:
             print("\nLogin Success!")
-            import staff
+            staff.staff_portal()
 
         else:
-            print("\nLogin failed. Please try again.\n")
+            print("\nLogin failed. Please try again.")
 
     elif choice == '2':
-        print("\n------------- Admin Login -------------\n")
+        print("\n------------- Admin Login -------------")
 
-        admin_username = input("Enter Name: ")
+        admin_username = input("\nEnter Name: ")
 
         while True:
-            admin_password = input("Enter Password (8 characters or more): ")
+            admin_password = input("\nEnter Password (8 characters or more): ")
             if len(admin_password) >= 8:
                 break
             else:
-                print("\nPassword must be at least 8 characters. Please try again.\n")
+                print("\nPassword must be at least 8 characters. Please try again.")
 
         login_success = False
 
@@ -53,17 +56,15 @@ while True:
                 break
 
         if login_success:
-            print("\nLogin Success!\n")
-
-            import admin
-            admin.main()
+            print("\nLogin Success!")
+            admin.admin_portal()
 
         else:
-            print("\nLogin failed. Please try again.\n")
+            print("\nLogin failed. Please try again.")
 
     elif choice == '3':
-        print("\nSystem Shutdown....\n")
+        print("\nSystem Shutdown....")
         break
 
     else:
-        print("\nInvalid option. Please try again.\n")
+        print("\nInvalid option. Please try again.")

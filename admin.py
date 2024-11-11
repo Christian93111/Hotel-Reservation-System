@@ -6,7 +6,6 @@ class Room:
         self.is_available = is_available
         self.room_type = room_type
         self.price_per_night = price_per_night
-        self.is_available = True
 
     def display_info(self):
         if self.is_available:
@@ -16,8 +15,7 @@ class Room:
 
         print("Room", self.room_number, "-", status)
         print("Room Type:", self.room_type)
-        print("Price per night:", self.price_per_night, "PHP")
-
+        print("Price per night:", self.price_per_night, "PHP\n")
 
 def load_room_status():
     global rooms
@@ -41,7 +39,6 @@ def load_room_status():
     except FileNotFoundError:
         pass
 
-
 def save_room_status():
     f = open("room_status.txt", "w")
     for room in rooms:
@@ -49,7 +46,7 @@ def save_room_status():
             status = "Available"
         else:
             status = "Booked"
-    f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
+        f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
 
 def add_new_room():
     room_types = {
@@ -67,22 +64,21 @@ def add_new_room():
             print("\n------------- Room Type -------------\n")
             for key, value in room_types.items():
                 print(f"{key}. {value}")
-            room_type_choice = input("\nEnter the room type number: ")
+            room_type_choice = input("\nEnter Room type number: ")
 
             if room_type_choice not in room_types:
                 print("\nInvalid room type choice. Please enter a valid number.")
                 continue
 
             room_type = room_types[room_type_choice]
-            room_price = int(input("Enter price of room per night: "))
+            room_price = int(input("\nEnter Price of room per night: "))
             new_room = Room(new_room_number, True, room_type, room_price)
             rooms.append(new_room)
-            print(f"Add New Room {new_room_number}\nRoom Type: {new_room.room_type}\nPrice per night: {new_room.price_per_night} PHP. is added successfully!")
+            print(f"\nAdd New Room {new_room_number}\nRoom Type: {new_room.room_type}\nPrice per night: {new_room.price_per_night} PHP. is added successfully!")
             save_room_status()
             break
         except ValueError:
-            print("\nInvalid input. Please try again.\n")
-
+            print("\nInvalid input. Please try again.")
 
 def delete_room():
     try:
@@ -100,15 +96,14 @@ def delete_room():
         if room:
             if room.is_available:
                 rooms.remove(room)
-                print(f"Room {room_number} has been deleted successfully!")
+                print(f"\nRoom {room_number} has been deleted successfully!")
                 save_room_status()
             else:
-                print(f"Room {room_number} is currently booked and cannot be deleted.")
+                print(f"\nRoom {room_number} is currently booked and cannot be deleted.")
         else:
-            print("Room not found.")
+            print("\nRoom not found.")
     except ValueError:
-        print("Please enter a valid room number.")
-
+        print("\nPlease enter a valid room number.")
 
 def view_check_in_records():
     f = open("check_in.txt", "r")
@@ -117,8 +112,7 @@ def view_check_in_records():
         print("\n------------- Check In Information -------------\n")
         print(records)
     else:
-        print("\nNo check-in Information found\n")
-
+        print("\nNo Check In Information found")
 
 def view_check_out_records():
     f = open("check_out.txt", "r")
@@ -127,27 +121,57 @@ def view_check_out_records():
         print("\n------------- Check Out Information -------------\n")
         print(records)
     else:
-        print("\nNo Check Out Information found.\n")
+        print("\nNo Check Out Information found.")
 
 def view_employee_record_login():
         f = open("staff.txt", "r")
         records = f.read()
         if records:
-            print("\n------------- Staff Information -------------\n")
+            print("\n------------- Staff Login Information -------------\n")
             print(records)
         else:
-            print("\nNo Employee Information found.\n")
+            print("\nNo Employee Information found.")
 
 def view_admin_record_login():
     f = open("admin.txt", "r")
     records = f.read()
     if records:
-        print("\n------------- Admin Information -------------\n")
+        print("\n------------- Admin Login Information -------------\n")
         print(records)
     else:
-        print("\nNo Admin Information found.\n")
+        print("\nNo Admin Information found.")
 
-def main():
+def new_employee():
+    print("\n------------- New Employee Register Information -------------\n")
+    employee_name = input("\nEnter Name: ")
+    while True:
+        employee_password = input("\nEnter Password (8 characters or more): ")
+        if len(employee_password) >= 8:
+            break
+        else:
+            print("\nPassword must be at least 8 characters. Please try again.")
+
+    f = open("staff.txt", "a")
+    f.write(f"Name: {employee_name}, Password: {employee_password}\n")
+    f.close()
+    print("\nRegister success!")
+
+def new_admin():
+    print("\n------------- New Admin Register Information -------------\n")
+    admin_name = input("\nEnter Name: ")
+    while True:
+        admin_password = input("\nEnter Password (8 characters or more): ")
+        if len(admin_password) >= 8:
+            break
+        else:
+            print("\nPassword must be at least 8 characters. Please try again.")
+            
+    f = open("admin.txt", "a")
+    f.write(f"Name: {admin_name}, Password: {admin_password}\n")
+    f.close()
+    print("\nRegister success!")
+
+def admin_portal():
     global rooms
     rooms = []
     load_room_status()
@@ -157,15 +181,15 @@ def main():
         print("1. Add New Room")
         print("2. Delete Room")
         print("3. Display Rooms")
-        print("4. View Check In Record's")
-        print("5. View Check Out Record's")
+        print("4. View Check In Information")
+        print("5. View Check Out Information")
         print("6. Add New Employee")
         print("7. Add New Admin")
-        print("8. View Employee Login")
-        print("9. View Admin Login")
+        print("8. View Employee Information")
+        print("9. View Admin Information")
         print("10. Exit")
 
-        choice = input("Choose an option: ")
+        choice = input("\nChoose an option: ")
 
         if choice == '1':
             add_new_room()
@@ -181,7 +205,6 @@ def main():
             else:
                 print("\nNo room record Information found.")
 
-
         elif choice == '4':
             view_check_in_records()
 
@@ -189,49 +212,23 @@ def main():
             view_check_out_records()
 
         elif choice == '6':
-            print("\n------------- New Employee Register Information -------------")
-            employee_name = input("Enter Name: ")
-
-            while True:
-                employee_password = input("Enter Password (8 characters or more): ")
-                if len(employee_password) >= 8:
-                    break
-                else:
-                    print("Password must be at least 8 characters. Please try again.")
-
-            f = open("staff.txt", "a")
-            f.write(f"Name: {employee_name}, Password: {employee_password}\n")
-            f.close()
-            print("\nRegister success!")
+            new_employee()
 
         elif choice == '7':
-            print("\n------------- New Admin Register Information -------------")
-            admin_name = input("Enter Name: ")
-
-            while True:
-                admin_password = input("Enter Password (8 characters or more): ")
-                if len(admin_password) >= 8:
-                    break
-                else:
-                    print("Password must be at least 8 characters. Please try again.")
-
-            f = open("admin.txt", "a")
-            f.write(f"Name: {admin_name}, Password: {admin_password}\n")
-            f.close()
-            print("\nRegister success!")
+            new_admin()
 
         elif choice == '8':
             view_employee_record_login()
 
         elif choice == '9':
-            view_employee_record_login()
+            view_admin_record_login()
 
         elif choice == '10':
-            print("\nReturn to the menu...\n")
+            print("\nReturn to the menu...")
             break
 
         else:
-            print("\nInvalid choice. Please try again.\n")
+            print("\nInvalid choice. Please try again.")
 
 if __name__ == "__main__":
-    main()
+    admin_portal()
