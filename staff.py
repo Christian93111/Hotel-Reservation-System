@@ -8,15 +8,15 @@ class Room:
         self.price_per_night = price_per_night
         self.guest_name = None
         self.check_in_time = None
-        self.nights_stay = 0  # Initialize nights_stay
-        self.total_price = 0  # Initialize total_price
+        self.nights_stay = 0
+        self.total_price = 0
 
     def check_in(self, guest_name, check_in_time, nights_stay):
-        self.is_available = False
         self.guest_name = guest_name
         self.check_in_time = check_in_time
         self.nights_stay = nights_stay
         self.total_price = self.price_per_night * nights_stay
+        self.is_available = False
         self.update_room_status_file()
 
     def check_out(self):
@@ -38,13 +38,10 @@ class Room:
         print("Price per night:", self.price_per_night, "PHP\n")
 
     def update_room_status_file(self):
-        f = open("room_status.txt", "w")
-        for room in rooms:
-            if self.is_available:
-                status = "Available"
-            else:
-                status = "Booked"
-            f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
+        with open("room_status.txt", "w") as f:
+            for room in rooms:
+                status = "Available" if room.is_available else "Booked"
+                f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
 
 def load_room_status():
     global rooms
@@ -75,17 +72,28 @@ load_room_status()
 
 def staff_portal():
     while True:
-        print("\n------------- Welcome -------------\n")
-        print("1. Check In")
-        print("2. Check Out")
-        print("3. Display Rooms")
-        print("4. Exit")
+        print("\n-------------  -------------\n")
+        print("1. Check In / Booking")
+        print("2. Cancel Booking")
+        print("3. Check Out")
+        print("4. Display Rooms")
+        print("5. Exit")
 
         choice = input("\nChoose an option: ")
 
         if choice == '1':
             while True:
-                guest_name = input("\nEnter Guest Name: ")
+                if not rooms:
+                    print("\nSorry No Room Record Information. Cannot be Check In")
+                    break
+
+                while True:
+                    guest_name = input("\nEnter Guest Name: ")
+                    if guest_name.isalpha():
+                        break
+                    else:
+                        print("Name must only contain alphabetic characters.")
+
 
                 while True:
                     contact_number = input("\nEnter Contact number (11 digits): ")
@@ -111,10 +119,18 @@ def staff_portal():
                             if room.is_available:
                                 while True:
                                     check_in_day = input("\nEnter Arrival Date (MM/DD) in Numerical: ")
+
                                     try:
                                         current_month_year = datetime.now().year
-                                        check_in_day = datetime.strptime(f"{check_in_day}/{current_month_year}","%d/%m/%Y")
-                                        break
+                                        check_in_day = datetime.strptime(f"{check_in_day}/{current_month_year}","%m/%d/%Y")
+                                        today = datetime.now().date()
+
+                                        if check_in_day.date() < today:
+                                            print("\nInvalid input. Please enter a future date, not a past date.")
+
+                                        else:
+                                            break
+
                                     except ValueError:
                                         print("\nInvalid day format. Please use (MM/DD) in numerical.")
 
@@ -159,26 +175,95 @@ def staff_portal():
                                 f.write(f"Guest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: {room.total_price} PHP\n\n")
                                 f.close()
 
-                                print(f"\nRoom {room_number} booked.\nCheck-in time is {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is {room.total_price} PHP\n\n")
+                                print(f"\nRoom {room_number} booked.\nCheck-in time is {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is {room.total_price} PHP")
+
                                 break
                             else:
                                 print(f"\nRoom {room_number} is already booked.")
                         else:
                             print("\nInvalid room number.")
+
                     except ValueError:
                         print("\nPlease enter a valid room number")
-                break
+
+                while True:
+                    print("\nDo you want to continue?")
+                    print("1. Yes")
+                    print("2. No")
+
+                    again = input("Choose an option: ").strip()
+
+                    if again == '1':
+                        break
+                    elif again == '2':
+                        print("\nReturning to the main menu...")
+                        staff_portal()
+                        return
+                    else:
+                        print("\nInvalid input. Please enter '1' to continue booking or '2' to return to the main menu.")
 
         elif choice == '2':
             while True:
+                if not rooms:
+                    print("Sorry No Room Record Information. Cannot be Cancel Booking")
+                    break
+                print("\n------------- Room Information -------------\n")
+                for room in rooms:
+                    room.display_info()
+
+                try:
+                    room_number = int(input("\nEnter Room Number to Cancel Booking: "))
+                    room = next((r for r in rooms if r.room_number == room_number), None)
+
+                    if room:
+                        if not room.is_available:
+                            cancel_booking = datetime.now()
+                            cancel_booking_time = cancel_booking.strftime("%m/%d/%Y %I:%M %p")
+
+                            f = open("cancel_booking.txt", "a")
+                            f.write(f"Room: {room_number}\nCancellation Time: {cancel_booking_time}\n\n")
+                            f.close()
+
+                            room.check_out()
+                            print(f"\nRoom {room_number} has been Canceled.")
+                            print(f"Cancellation Time: {cancel_booking_time}.")
+                        else:
+                            print(f"\nRoom {room_number} is already vacant.")
+                            break
+                    else:
+                        print("\nInvalid room number.")
+
+                except ValueError:
+                    print("\nPlease enter a valid room number.")
+                while True:
+                    print("\nDo you want to continue?")
+                    print("1. Yes")
+                    print("2. No")
+
+                    again = input("Choose an option: ").strip()
+
+                    if again == '1':
+                        break
+                    elif again == '2':
+                        print("\nReturning to the main menu...")
+                        staff_portal()
+                        return
+                    else:
+                        print("\nInvalid input. Please enter '1' to continue cancel booking or '2' to return to the main menu.")
+
+        elif choice == '3':
+            while True:
+                if not rooms:
+                    print("Sorry No Room Record Information. Cannot be Check Out")
+                    break
+                print("\n------------- Room Information ------------\n")
+
+                for room in rooms:
+                    room.display_info()
+
                 try:
                     room_number = int(input("\nEnter Room Number to Check Out: "))
-
-                    room = None
-                    for r in rooms:
-                        if r.room_number == int(room_number):
-                            room = r
-                            break
+                    room = next((r for r in rooms if r.room_number == room_number), None)
 
                     if room:
                         if not room.is_available:
@@ -191,16 +276,34 @@ def staff_portal():
 
                             room.check_out()
 
-                            print(f"\nRoom {room_number} has been checked out successfully. Check-out time: {check_out_time_str}.")
+                            print(f"\nRoom {room_number} has been checked out.")
+                            print(f"Check-out time: {check_out_time_str}.")
                         else:
                             print(f"\nRoom {room_number} is already vacant.")
-                        break
+                            break
                     else:
                         print("\nInvalid room number.")
+
                 except ValueError:
                     print("\nPlease enter a valid room number.")
 
-        elif choice == '3':
+                while True:
+                    print("\nDo you want to continue?")
+                    print("1. Yes")
+                    print("2. No")
+
+                    again = input("Choose an option: ").strip()
+
+                    if again == '1':
+                        break
+                    elif again == '2':
+                        print("\nReturning to the main menu...")
+                        staff_portal()
+                        return
+                    else:
+                        print("\nInvalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
+
+        elif choice == '4':
             if rooms:
                 print("\n------------- Room Information -------------\n")
                 for room in rooms:
@@ -208,7 +311,7 @@ def staff_portal():
             else:
                 print("\nNo Room record list found.")
 
-        elif choice == '4':
+        elif choice == '5':
             print("\nReturn to the menu...")
             break
 
