@@ -1,3 +1,4 @@
+import main
 from datetime import datetime
 
 class Room:
@@ -15,7 +16,7 @@ class Room:
 
         print("Room", self.room_number, "-", status)
         print("Room Type:", self.room_type)
-        print("Price per night:", self.price_per_night, "PHP\n")
+        print(f"Price per night: ₱ {self.price_per_night}\n")
 
 def load_room_status():
     global rooms
@@ -40,13 +41,11 @@ def load_room_status():
         pass
 
 def save_room_status():
-    f = open("room_status.txt", "w")
-    for room in rooms:
-        if room.is_available:
-            status = "Available"
-        else:
-            status = "Booked"
-        f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
+    with open("room_status.txt", "w") as f:
+        sorted_rooms = sorted(rooms, key=lambda x: x.room_number)
+        for room in sorted_rooms:
+            status = "Available" if room.is_available else "Booked"
+            f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
 
 def add_new_room():
     while True:
@@ -61,10 +60,17 @@ def add_new_room():
 
         while True:
             try:
-                new_room_number = len(rooms) + 1
+                room_numbers = [room.room_number for room in rooms]
+
+                new_room_number = 1
+                while new_room_number in room_numbers:
+                    new_room_number += 1
+
                 print("\n------------- Room Type -------------\n")
+
                 for key, value in room_types.items():
                     print(f"{key}. {value}")
+
                 room_type_choice = input("\nEnter Room type number: ")
 
                 if room_type_choice not in room_types:
@@ -74,10 +80,12 @@ def add_new_room():
                 room_type = room_types[room_type_choice]
                 room_price = int(input("\nEnter Price of room per night: "))
                 new_room = Room(new_room_number, True, room_type, room_price)
-                rooms.append(new_room)
-                print(f"\nAdd New Room {new_room_number}\nRoom Type: {new_room.room_type}\nPrice per night: {new_room.price_per_night} PHP. is added successfully!")
+                rooms.insert(0, new_room)
+
+                print(f"\nAdd New Room {new_room_number}\nRoom Type: {new_room.room_type}\nPrice per night: ₱ {new_room.price_per_night}. is added successfully!")
                 save_room_status()
                 break
+
             except ValueError:
                 print("\nInvalid input. Please try again.")
 
@@ -189,7 +197,7 @@ def edit_room():
                     except ValueError:
                         print("\nInvalid input. Please enter a valid number for the price.")
 
-                    print(f"\nRoom Type: {room.room_type}\nPrice per night: {room.price_per_night} PHP. has been updated successfully!")
+                    print(f"\nRoom Type: {room.room_type}\nPrice per night: ₱ {room.price_per_night}. has been updated successfully!")
                     save_room_status()
 
                     while True:
@@ -206,20 +214,20 @@ def edit_room():
                             admin_portal()
                             return
                         else:
-                            print("\nInvalid input. Please enter '1' to continue editing or '2' to return to the main menu.")
+                            print("\nInvalid choice. Please enter '1' to continue editing or '2' to return to the main menu.")
                 else:
                     print(f"\nRoom {room_number} is currently booked and cannot be edited.")
             else:
                 print("\nRoom not found.")
         except ValueError:
-            print("\nPlease enter a valid room number.")
+            print("\nInvalid choice. Please enter a valid room number.")
 
 
 def view_check_in_records():
     f = open("check_in.txt", "r")
     records = f.read()
     if records:
-        print("\n------------- Check In Information -------------\n")
+        print("\n------------- View Customer Check In Information -------------\n")
         print(records)
     else:
         print("\nNo Check In Information found")
@@ -237,7 +245,7 @@ def view_employee_record_login():
         f = open("staff.txt", "r")
         records = f.read()
         if records:
-            print("\n------------- Staff Login Log -------------\n")
+            print("\n------------- Staff Login Information -------------\n")
             print(records)
         else:
             print("\nNo Employee Information found.")
@@ -246,7 +254,7 @@ def view_admin_record_login():
     f = open("admin.txt", "r")
     records = f.read()
     if records:
-        print("\n------------- Admin Login Log -------------\n")
+        print("\n------------- Admin Login Information Login -------------\n")
         print(records)
     else:
         print("\nNo Admin Information found.")
@@ -265,10 +273,10 @@ def new_employee():
         print("\n------------- New Employee Register Login -------------\n")
         while True:
             employee_name = input("\nEnter Name: ")
-            if employee_name.isalpha():
+            if employee_name.replace(" ", "").isalpha():
                 break
             else:
-                print("Name must only contain alphabetic characters.")
+                print("\nName must only contain alphabetic characters.")
         while True:
             employee_password = input("\nEnter Password (8 characters or more): ")
             if len(employee_password) >= 8:
@@ -295,17 +303,17 @@ def new_employee():
                 admin_portal()
                 return
             else:
-                print("\nInvalid input. Please enter '1' to continue editing or '2' to return to the main menu.")
+                print("\nInvalid choice. Please enter '1' to continue editing or '2' to return to the main menu.")
 
 def new_admin():
     while True:
         print("\n------------- New Admin Register Login -------------\n")
         while True:
             admin_name = input("\nEnter Name: ")
-            if admin_name.isalpha():
+            if admin_name.replace(" ", "").isalpha():
                 break
             else:
-                print("Name must only contain alphabetic characters.")
+                print("\nName must only contain alphabetic characters.")
 
         while True:
             admin_password = input("\nEnter Password (8 characters or more): ")
@@ -313,7 +321,7 @@ def new_admin():
                 break
             else:
                 print("\nPassword must be at least 8 characters. Please try again.")
-            
+
         f = open("admin.txt", "a")
         f.write(f"Name: {admin_name}, Password: {admin_password}\n\n")
         f.close()
@@ -332,7 +340,7 @@ def new_admin():
                 print("\nReturn to the main menu....")
                 return
             else:
-                print("\nInvalid input. Please enter '1' to continue editing or '2' to return to the main menu.")
+                print("\nInvalid choice. Please enter '1' to continue editing or '2' to return to the main menu.")
 
 def view_rooms():
     if rooms:
@@ -358,8 +366,8 @@ def admin_portal():
         print("7. View Cancel Booking Log")
         print("8. Add New Employee")
         print("9. Add New Admin")
-        print("10. View Employee Login Log")
-        print("11. View Admin Login Log")
+        print("10. View Employee Information Login")
+        print("11. View Admin Information Login")
         print("12. Exit")
 
         choice = input("\nChoose an option: ")
@@ -369,7 +377,7 @@ def admin_portal():
 
         elif choice == '2':
             delete_room()
-        
+
         elif choice == '3':
             edit_room()
 
@@ -399,7 +407,7 @@ def admin_portal():
 
         elif choice == '12':
             print("\nReturn to the menu...")
-            break
+            main.main_portal()
 
         else:
             print("\nInvalid choice. Please try again.")
