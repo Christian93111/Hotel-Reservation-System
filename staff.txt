@@ -1,2 +1,2 @@
-Name: admin, Password: 12345678
+Name: employee, Password: 12345678
 
