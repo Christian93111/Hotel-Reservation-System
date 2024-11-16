@@ -62,8 +62,8 @@ def view_check_in_records():
 
     records = [line for line in records if line.strip()]
 
-    for i in range(0, len(records), 10):  # Each record is 10 lines, so we step by 10
-        record = records[i:i + 10]  # Slice out a single record
+    for i in range(0, len(records), 10):
+        record = records[i:i + 10]
         ref_no = record[0].split(":")[1].strip()
 
         if reference_number == ref_no:
