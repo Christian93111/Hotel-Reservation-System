@@ -224,8 +224,8 @@ def edit_room():
 
 
 def view_check_in_records():
-    f = open("check_in.txt", "r")
-    records = f.read()
+    f = open("check_in.txt", "r", encoding="utf-8")
+    records = f.read().strip()
     if records:
         print("\n------------- View Customer Check In Information -------------\n")
         print(records)
@@ -234,7 +234,7 @@ def view_check_in_records():
 
 def view_check_out_records():
     f = open("check_out.txt", "r")
-    records = f.read()
+    records = f.read().strip()
     if records:
         print("\n------------- Check Out Log -------------\n")
         print(records)
@@ -243,7 +243,7 @@ def view_check_out_records():
 
 def view_employee_record_login():
         f = open("staff.txt", "r")
-        records = f.read()
+        records = f.read().strip()
         if records:
             print("\n------------- Staff Login Information -------------\n")
             print(records)
@@ -252,7 +252,7 @@ def view_employee_record_login():
 
 def view_admin_record_login():
     f = open("admin.txt", "r")
-    records = f.read()
+    records = f.read().strip()
     if records:
         print("\n------------- Admin Login Information Login -------------\n")
         print(records)
@@ -261,7 +261,7 @@ def view_admin_record_login():
 
 def view_cancel_booking_records():
     f = open("cancel_booking.txt", "r")
-    records = f.read()
+    records = f.read().strip()
     if records:
         print("\n------------- Cancel Booking Log -------------\n")
         print(records)
@@ -356,7 +356,7 @@ def admin_portal():
     load_room_status()
 
     while True:
-        print("\n-------------  -------------\n")
+        print("\n------------- Admin -------------\n")
         print("1. Add New Room")
         print("2. Delete Room")
         print("3. Edit Room")

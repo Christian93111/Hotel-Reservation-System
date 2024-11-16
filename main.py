@@ -75,7 +75,7 @@ def main_portal():
 
         elif choice == '3':
             print("\nSystem Shutdown....")
-            break
+            exit()
 
         else:
             print("\nInvalid option. Please try again.")
