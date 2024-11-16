@@ -59,16 +59,14 @@ def view_check_in_records():
     f = open("check_in.txt", "r", encoding="utf-8")
     records = f.readlines()
     f.close()
-
-    # Clean up empty lines in records
+
     records = [line for line in records if line.strip()]
 
     for i in range(0, len(records), 10):  # Each record is 10 lines, so we step by 10
         record = records[i:i + 10]  # Slice out a single record
-        ref_no = record[0].split(":")[1].strip()  # Get reference number from the first line
+        ref_no = record[0].split(":")[1].strip()
 
-        if reference_number == ref_no:
-            # If it matches the reference number, the details in the required format will print
+        if reference_number == ref_no:
             print("\n------------- View Customer Check In Information -------------\n")
             print(record[0].strip())  # Reference Number
             print(record[1].strip())  # Guest Name
