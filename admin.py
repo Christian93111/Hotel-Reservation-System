@@ -109,9 +109,9 @@ def add_new_room():
 def delete_room():
     while True:
         try:
-            print("\n------------- Room Information -------------\n")
-            for room in rooms:
-                room.display_info()
+            if not rooms:
+                print("\nSorry No Room Record Information. Cannot be Check In")
+                break
 
             room_number = int(input("\nRoom Number to delete: "))
 
@@ -154,9 +154,9 @@ def delete_room():
 def edit_room():
     while True:
         try:
-            print("\n------------- Room Information -------------\n")
-            for room in rooms:
-                room.display_info()
+            if not rooms:
+                print("\nSorry No Room Record Information. Cannot be Check In")
+                break
 
             room_number = int(input("\nEnter Room Number to Edit: "))
 
@@ -222,6 +222,13 @@ def edit_room():
         except ValueError:
             print("\nInvalid choice. Please enter a valid room number.")
 
+def view_rooms():
+    if rooms:
+        print("\n------------- Room Information -------------\n")
+        for room in rooms:
+            room.display_info()
+    else:
+        print("\nNo Room Information Found.")
 
 def view_check_in_records():
     f = open("check_in.txt", "r", encoding="utf-8")
@@ -240,24 +247,6 @@ def view_check_out_records():
         print(records)
     else:
         print("\nNo Check Out Information found.")
-
-def view_employee_record_login():
-        f = open("staff.txt", "r")
-        records = f.read().strip()
-        if records:
-            print("\n------------- Staff Login Information -------------\n")
-            print(records)
-        else:
-            print("\nNo Employee Information found.")
-
-def view_admin_record_login():
-    f = open("admin.txt", "r")
-    records = f.read().strip()
-    if records:
-        print("\n------------- Admin Login Information Login -------------\n")
-        print(records)
-    else:
-        print("\nNo Admin Information found.")
 
 def view_cancel_booking_records():
     f = open("cancel_booking.txt", "r")
@@ -285,7 +274,7 @@ def new_employee():
                 print("\nPassword must be at least 8 characters. Please try again.")
 
         f = open("staff.txt", "a")
-        f.write(f"Name: {employee_name}, Password: {employee_password}\n\n")
+        f.write(f"Username: {employee_name}, Password: {employee_password}\n\n")
         f.close()
         print("\nRegister success!")
 
@@ -323,7 +312,7 @@ def new_admin():
                 print("\nPassword must be at least 8 characters. Please try again.")
 
         f = open("admin.txt", "a")
-        f.write(f"Name: {admin_name}, Password: {admin_password}\n\n")
+        f.write(f"Username: {admin_name}, Password: {admin_password}\n\n")
         f.close()
         print("\nRegister success!")
 
@@ -342,13 +331,23 @@ def new_admin():
             else:
                 print("\nInvalid choice. Please enter '1' to continue editing or '2' to return to the main menu.")
 
-def view_rooms():
-    if rooms:
-        print("\n------------- Room Information -------------\n")
-        for room in rooms:
-            room.display_info()
+def view_employee_record_login():
+        f = open("staff.txt", "r")
+        records = f.read().strip()
+        if records:
+            print("\n------------- Staff Login Information -------------\n")
+            print(records)
+        else:
+            print("\nNo Employee Information found.")
+
+def view_admin_record_login():
+    f = open("admin.txt", "r")
+    records = f.read().strip()
+    if records:
+        print("\n------------- Admin Login Information Login -------------\n")
+        print(records)
     else:
-        print("\nNo Room Information Found.")
+        print("\nNo Admin Information found.")
 
 def admin_portal():
     global rooms

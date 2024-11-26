@@ -59,14 +59,16 @@ def view_check_in_records():
     f = open("check_in.txt", "r", encoding="utf-8")
     records = f.readlines()
     f.close()
-
+
+    # Clean up empty lines in records
     records = [line for line in records if line.strip()]
 
-    for i in range(0, len(records), 10):
-        record = records[i:i + 10]
-        ref_no = record[0].split(":")[1].strip()
+    for i in range(0, len(records), 10):  # Each record is 10 lines, so we step by 10
+        record = records[i:i + 10]  # Slice out a single record
+        ref_no = record[0].split(":")[1].strip()  # Get reference number from the first line
 
-        if reference_number == ref_no:
+        if reference_number == ref_no:
+            # If it matches the reference number, the details in the required format will print
             print("\n------------- View Customer Check In Information -------------\n")
             print(record[0].strip())  # Reference Number
             print(record[1].strip())  # Guest Name
@@ -233,10 +235,10 @@ def staff_portal():
                                 room.check_in(guest_name, check_in_time, nights_stay, reference_number)
 
                                 f = open("check_in.txt", "a", encoding="utf-8")
-                                f.write(f"Reference Number: {reference_number}\nGuest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: ₱ {room.total_price}\n\n")
+                                f.write(f"Reference Number: {reference_number}\nGuest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In/Time Arrival: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: ₱ {room.total_price}\n\n")
                                 f.close()
 
-                                print(f"\nReference Number: {reference_number}\nRoom {room_number} booked.\nCheck-in time is {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is: ₱ {room.total_price}")
+                                print(f"\nReference Number: {reference_number}\nRoom {room_number} Booked.\nCheck-in/Time Arrival is: {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is: ₱ {room.total_price}")
 
                                 break
                             else:

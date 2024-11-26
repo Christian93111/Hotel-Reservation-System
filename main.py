@@ -1,84 +1,86 @@
-import staff
 import admin
+import staff
+import sys
+import getpass
+
+def getpass_asterisks(prompt=''):
+    if sys.platform == 'win32':
+        import msvcrt
+
+        password = []
+        print(prompt, end='', flush=True)
+
+        while True:
+            ch = msvcrt.getch()  # Get a single character from user
+
+            if ch == b'\r' or ch == b'\n':  # Enter key pressed
+                break
+
+            elif ch == b'\x08':  # Backspace key pressed
+                if password:
+                    password.pop()
+                    print('\b \b', end='', flush=True)  # Erase the last character
+
+            else:
+                password.append(ch.decode())
+                print('*', end='', flush=True)  # Display asterisk
+
+        print()  # Move to the next line after password input
+        return ''.join(password)
+
+    else:
+        # UNIX-based system solution (Linux/macOS)
+        password = getpass.getpass(prompt)  # getpass already hides input by default
+        return password
 
 def main_portal():
+    print("\n----- Hotel Reservation -----")
+
+    username = input("\nUsername: ")
+
     while True:
-        print("\n------------- Hotel Reservation System -------------\n")
-        print("1. Employee")
-        print("2. Admin")
-        print("3. Exit")
-        choice = input("\nChoose an option: ")
+        password = getpass_asterisks("\nPassword: ")
+        if len(password) >= 8:
+            break
+        else:
+            print("\nError: Password must be at least 8 characters or more. Please try again.")
 
-        if choice == '1':
-            print("\n------------- Employee Login -------------")
+    login_success = False
+    user_type = None
 
-            while True:
-                login_username = input("\nEnter Name: ")
-                if login_username.replace(" ", "").isalpha():
-                    break
-                else:
-                    print("\nName must only contain alphabetic characters.")
+    try:
+        f = open("admin.txt", "r")
+        for line in f:
+            if line.strip() == f"Username: {username}, Password: {password}":
+                login_success = True
+                user_type = "admin"
+                break
+        f.close()
+    except FileNotFoundError:
+        pass
 
-            while True:
-                login_password = input("\nEnter Password (8 characters or more): ")
-                if len(login_password) >= 8:
-                    break
-                else:
-                    print("\nPassword must be at least 8 characters or more. Please try again.")
-
-            login_success = False
-
+    if not login_success:
+        try:
             f = open("staff.txt", "r")
             for line in f:
-                if line.strip() == f"Name: {login_username}, Password: {login_password}":
+                if line.strip() == f"Username: {username}, Password: {password}":
                     login_success = True
+                    user_type = "employee"
                     break
+            f.close()
+        except FileNotFoundError:
+            pass
 
-            if login_success:
-                print("\nLogin Success!")
-                staff.staff_portal()
+    if login_success:
+        print(f"\nLogin Success!\n\nWelcome {username}")
+        if user_type == "admin":
+            admin.admin_portal()
+        elif user_type == "employee":
+            staff.staff_portal()
 
-            else:
-                print("\nLogin failed. Please try again.")
-
-        elif choice == '2':
-            print("\n------------- Admin Login -------------")
-
-            while True:
-                admin_username = input("\nEnter Name: ")
-                if admin_username.replace(" ", "").isalpha():
-                    break
-                else:
-                    print("\nName must only contain alphabetic characters.")
-
-            while True:
-                admin_password = input("\nEnter Password (8 characters or more): ")
-                if len(admin_password) >= 8:
-                    break
-                else:
-                    print("\nPassword must be at least 8 characters. Please try again.")
-
-            login_success = False
-
-            f = open("admin.txt", "r")
-            for line in f:
-                if line.strip() == f"Name: {admin_username}, Password: {admin_password}":
-                    login_success = True
-                    break
-
-            if login_success:
-                print("\nLogin Success!")
-                admin.admin_portal()
-
-            else:
-                print("\nLogin failed. Please try again.")
-
-        elif choice == '3':
-            print("\nSystem Shutdown....")
-            exit()
-
-        else:
-            print("\nInvalid option. Please try again.")
+    else:
+        print("\nLogin failed. Please try again.")
+        main_portal()
 
 if __name__ == "__main__":
     main_portal()
