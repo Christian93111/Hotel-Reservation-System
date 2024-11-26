@@ -1,2 +1,3 @@
 # Hotel-Reservation-System
-This project is our school defense and simple written in Python run in a console/terminal : )
+this project is for our school defense in 1st semester (1st year college) and written in Python run in console/terminal.
+i hope this code helps for your project : )
