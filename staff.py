@@ -56,31 +56,25 @@ def check_in():
             break
 
         while True:
-            guest_name = input("\nEnter Guest Name: ")
+            guest_name = input("\nEnter Guest Name: ").strip()
             if guest_name.replace(" ", "").isalpha():
                 break
             else:
                 print("\nError: Name must only contain alphabetic characters.")
 
         while True:
-            contact_number = input("\nEnter Contact number (11 digits): ")
+            contact_number = input("\nEnter Contact Number: ").strip()
             if len(contact_number) == 11 and contact_number.startswith('09') and contact_number.isdigit():
                 break
             else:
-                print("\nError: Please enter a valid 11-digit contact number starting with '09'. ")
+                print("\nError: Please enter a valid 11-digit contact number starting with '09'.")
 
-        address = input("\nEnter Address: ")
-
-        while True:
-            email = input("\nEnter Email Address: ")
-            if email.endswith("@gmail.com"):
-                break
-            else:
-                print("\nError: Sorry, is it's not a valid Gmail Address. Please try again.")
+        address = input("\nEnter Address: ").strip()
+        email = input("\nEnter Email Address: ").strip()
 
         while True:
             try:
-                room_number = int(input("\nEnter Room Number to Check In: "))
+                room_number = int(input("\nEnter Room Number to Check In: ").strip())
 
                 room = None
                 for r in rooms:
@@ -91,7 +85,7 @@ def check_in():
                 if room:
                     if room.is_available:
                         while True:
-                            check_in_day = input("\nEnter Arrival Date (MM/DD/YYYY) in Numerical: ")
+                            check_in_day = input("\nEnter Arrival Date (MM/DD/YYYY): ").strip()
 
                             try:
                                 check_in_day = datetime.strptime(f"{check_in_day}", "%m/%d/%Y")
@@ -104,11 +98,11 @@ def check_in():
                                     break
 
                             except ValueError:
-                                print("\nError: Invalid day format. Please use (MM/DD/YYYY) in numerical.")
+                                print("\nError: Invalid day format. Please use (MM/DD/YYYY) in numerical with slash.")
 
                         while True:
                             try:
-                                check_in_hour_input = int(input("\nEnter Check in Hour (1-12): "))
+                                check_in_hour_input = int(input("\nEnter Check in Hour (1-12): ").strip())
 
                                 if 1 <= check_in_hour_input <= 12:
                                     am_pm = input("\nEnter it is AM or PM?: ").strip().upper()
@@ -135,7 +129,7 @@ def check_in():
 
                         while True:
                             try:
-                                nights_stay = int(input("\nEnter How many days stay in the hotel?: "))
+                                nights_stay = int(input("\nEnter How many days stay in the hotel?: ").strip())
                                 break
 
                             except ValueError:
@@ -145,12 +139,10 @@ def check_in():
                         room.check_in(guest_name, check_in_time, nights_stay, reference_number)
 
                         f = open("check_in.txt", "a", encoding="utf-8")
-                        f.write(
-                            f"Reference Number: {reference_number}\nGuest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In/Time Arrival: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: ₱ {room.total_price}\n\n")
+                        f.write(f"Reference Number: {reference_number}\nGuest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In/Time Arrival: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: ₱ {room.total_price}\n\n")
                         f.close()
 
-                        print(
-                            f"\nReference Number: {reference_number}\nRoom {room_number} Booked.\nCheck-in/Time Arrival is: {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is: ₱ {room.total_price}")
+                        print(f"\nReference Number: {reference_number}\nRoom {room_number} Booked.\nCheck-in/Time Arrival is: {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is: ₱ {room.total_price}")
 
                         break
                     else:
@@ -173,7 +165,7 @@ def cancel_booking():
             room.display_info()
 
         try:
-            room_number = int(input("\nEnter Room Number to Cancel Booking: "))
+            room_number = int(input("Enter Room Number to Cancel Booking: ").strip())
 
             room = None
             for r in rooms:
@@ -226,13 +218,13 @@ def check_out():
         if not rooms:
             print("\nError: Sorry No Room Record Information. Cannot be Check Out")
             break
-        print("\n------------- Room Information ------------\n")
 
+        print("\n------------- Room Information ------------\n")
         for room in rooms:
             room.display_info()
 
         try:
-            room_number = int(input("\nEnter Room Number to Check Out: "))
+            room_number = int(input("Enter Room Number to Check Out: ").strip())
 
             room = None
             for r in rooms:
@@ -277,8 +269,7 @@ def check_out():
                 staff_portal()
 
             else:
-                print(
-                    "\nError: Invalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
+                print("\nError: Invalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
 
 def view_rooms():
     if rooms:
@@ -299,26 +290,26 @@ def view_check_in_records():
     records = f.readlines()
     f.close()
 
-    # Clean up empty lines in records
+    # clean up the empty lines in records
     records = [line for line in records if line.strip()]
 
-    for i in range(0, len(records), 10):  # Each record is 10 lines, so we step by 10
-        record = records[i:i + 10]  # Slice out a single record
-        ref_no = record[0].split(":")[1].strip()  # Get reference number from the first line
+    for i in range(0, len(records), 10):  # each record is 10 lines, so we step by 10
+        record = records[i:i + 10]  # slice out a single record
+        ref_no = record[0].split(":")[1].strip()  # get reference number from the first line
 
         if reference_number == ref_no:
-            # If it matches the reference number, the details in the required format will print
+            # if it matches the reference number, the details in the required format will print
             print("\n------------- View Customer Check In Information -------------\n")
-            print(record[0].strip())  # Reference Number
-            print(record[1].strip())  # Guest Name
-            print(record[2].strip())  # Contact No
-            print(record[3].strip())  # Address
-            print(record[4].strip())  # Email
-            print(record[5].strip())  # Room Number
-            print(record[6].strip())  # Room Type
-            print(record[7].strip())  # Check In Time
-            print(record[8].strip())  # Night Stay
-            print(record[9].strip())  # Total Price
+            print(record[0].strip())  # reference number
+            print(record[1].strip())  # guest Name
+            print(record[2].strip())  # contact number
+            print(record[3].strip())  # address
+            print(record[4].strip())  # email
+            print(record[5].strip())  # room number
+            print(record[6].strip())  # room type
+            print(record[7].strip())  # check in time
+            print(record[8].strip())  # night stay
+            print(record[9].strip())  # total price
             found = True
             break
 
@@ -361,9 +352,9 @@ def staff_portal():
         print("3. Check Out")
         print("4. Display Rooms")
         print("5. View Customer Check In Record")
-        print("6. Exit")
+        print("6. Log-out")
 
-        choice = input("\nChoose an option: ")
+        choice = input("\nChoose an option: ").strip()
 
         if choice == '1':
             check_in()
@@ -381,7 +372,7 @@ def staff_portal():
             view_check_in_records()
 
         elif choice == '6':
-            print("\nReturn to the menu...")
+            print("\nReturn to the Log-in page...")
             main.main_portal()
 
         else:
