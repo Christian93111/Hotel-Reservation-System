@@ -49,6 +49,245 @@ class Room:
                 status = "Available" if room.is_available else "Booked"
                 f.write(f"Room {room.room_number}, Status: {status}, Room Type: {room.room_type}, Price per night: {room.price_per_night} PHP\n")
 
+def check_in():
+    while True:
+        if not rooms:
+            print("\nError: Sorry No Room Record Information. Cannot be Check In")
+            break
+
+        while True:
+            guest_name = input("\nEnter Guest Name: ")
+            if guest_name.replace(" ", "").isalpha():
+                break
+            else:
+                print("\nError: Name must only contain alphabetic characters.")
+
+        while True:
+            contact_number = input("\nEnter Contact number (11 digits): ")
+            if len(contact_number) == 11 and contact_number.startswith('09') and contact_number.isdigit():
+                break
+            else:
+                print("\nError: Please enter a valid 11-digit contact number starting with '09'. ")
+
+        address = input("\nEnter Address: ")
+
+        while True:
+            email = input("\nEnter Email Address: ")
+            if email.endswith("@gmail.com"):
+                break
+            else:
+                print("\nError: Sorry, is it's not a valid Gmail Address. Please try again.")
+
+        while True:
+            try:
+                room_number = int(input("\nEnter Room Number to Check In: "))
+
+                room = None
+                for r in rooms:
+                    if r.room_number == room_number:
+                        room = r
+                        break
+
+                if room:
+                    if room.is_available:
+                        while True:
+                            check_in_day = input("\nEnter Arrival Date (MM/DD/YYYY) in Numerical: ")
+
+                            try:
+                                check_in_day = datetime.strptime(f"{check_in_day}", "%m/%d/%Y")
+                                today = datetime.now().date()
+
+                                if check_in_day.date() < today:
+                                    print("\nError: Invalid input. Please enter a future date, not a past date.")
+
+                                else:
+                                    break
+
+                            except ValueError:
+                                print("\nError: Invalid day format. Please use (MM/DD/YYYY) in numerical.")
+
+                        while True:
+                            try:
+                                check_in_hour_input = int(input("\nEnter Check in Hour (1-12): "))
+
+                                if 1 <= check_in_hour_input <= 12:
+                                    am_pm = input("\nEnter it is AM or PM?: ").strip().upper()
+
+                                    if am_pm in ["AM", "PM"]:
+                                        hour = check_in_hour_input
+                                        if am_pm == "AM" and hour == 12:
+                                            hour = 12
+                                        elif am_pm == "PM" and hour != 12:
+                                            hour += 12
+
+                                        check_in_time = check_in_day.replace(hour=hour, minute=0)
+                                        check_in_time_str = check_in_time.strftime(f"%m/%d/%Y %I:%M %p")
+                                        break
+
+                                    else:
+                                        print("\nError: Invalid AM/PM input. Please enter 'AM' or 'PM'.")
+
+                                else:
+                                    print("\nError: Invalid hour. Please enter a number between 1 and 12.")
+
+                            except ValueError:
+                                print("\nError: Invalid input. Please enter a number between 1 and 12 for hour.")
+
+                        while True:
+                            try:
+                                nights_stay = int(input("\nEnter How many days stay in the hotel?: "))
+                                break
+
+                            except ValueError:
+                                print("\nError: Invalid input. Please enter numerical")
+
+                        reference_number = generate_reference_number()
+                        room.check_in(guest_name, check_in_time, nights_stay, reference_number)
+
+                        f = open("check_in.txt", "a", encoding="utf-8")
+                        f.write(
+                            f"Reference Number: {reference_number}\nGuest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In/Time Arrival: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: ₱ {room.total_price}\n\n")
+                        f.close()
+
+                        print(
+                            f"\nReference Number: {reference_number}\nRoom {room_number} Booked.\nCheck-in/Time Arrival is: {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is: ₱ {room.total_price}")
+
+                        break
+                    else:
+                        print(f"\nRoom {room_number} is already booked.")
+                else:
+                    print("\nInvalid room number.")
+
+            except ValueError:
+                print("\nError: Please enter a valid room number")
+        break
+
+def cancel_booking():
+    while True:
+        if not rooms:
+            print("\nError: Sorry No Room Record Information. Cannot be Cancel Booking")
+            break
+
+        print("\n------------- Room Information -------------\n")
+        for room in rooms:
+            room.display_info()
+
+        try:
+            room_number = int(input("\nEnter Room Number to Cancel Booking: "))
+
+            room = None
+            for r in rooms:
+                if r.room_number == room_number:
+                    room = r
+                    break
+
+            if room:
+                if not room.is_available:
+                    cancel_booking = datetime.now()
+                    cancel_booking_time = cancel_booking.strftime("%m/%d/%Y %I:%M %p")
+
+                    f = open("cancel_booking.txt", "a")
+                    f.write(f"Room: {room_number}\nCancellation Time: {cancel_booking_time}\n\n")
+                    f.close()
+
+                    room.check_out()
+                    print(f"\nRoom {room_number} has been Canceled.")
+                    print(f"Cancellation Time: {cancel_booking_time}.")
+
+                else:
+                    print(f"\nRoom {room_number} is already available.")
+                    break
+
+            else:
+                print("\nError: Invalid room number.")
+
+        except ValueError:
+            print("\nError: Please enter a valid room number.")
+
+        while True:
+            print("\nDo you want to continue?")
+            print("1. Yes")
+            print("2. No")
+
+            again = input("\nChoose an option: ").strip()
+
+            if again == '1':
+                break
+
+            elif again == '2':
+                print("\nReturning to the main menu...")
+                staff_portal()
+
+            else:
+                print("\nError: Invalid input. Please enter '1' to continue cancel booking or '2' to return to the main menu.")
+
+def check_out():
+    while True:
+        if not rooms:
+            print("\nError: Sorry No Room Record Information. Cannot be Check Out")
+            break
+        print("\n------------- Room Information ------------\n")
+
+        for room in rooms:
+            room.display_info()
+
+        try:
+            room_number = int(input("\nEnter Room Number to Check Out: "))
+
+            room = None
+            for r in rooms:
+                if r.room_number == room_number:
+                    room = r
+                    break
+
+            if room:
+                if not room.is_available:
+                    check_out_time = datetime.now()
+                    check_out_time_str = check_out_time.strftime("%m/%d/%Y %I:%M %p")
+
+                    f = open("check_out.txt", "a")
+                    f.write(f"Room: {room_number}\nCheck Out: {check_out_time_str}\n\n")
+                    f.close()
+
+                    room.check_out()
+
+                    print(f"\nRoom {room_number} has been checked out.")
+                    print(f"Check-out time: {check_out_time_str}.")
+                else:
+                    print(f"\nRoom {room_number} is already available.")
+                    break
+            else:
+                print("\nError: Invalid room number.")
+
+        except ValueError:
+            print("\nError: Please enter a valid room number.")
+
+        while True:
+            print("\nDo you want to continue?")
+            print("1. Yes")
+            print("2. No")
+
+            again = input("Choose an option: ").strip()
+
+            if again == '1':
+                break
+
+            elif again == '2':
+                print("\nReturning to the main menu...")
+                staff_portal()
+
+            else:
+                print(
+                    "\nError: Invalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
+
+def view_rooms():
+    if rooms:
+        print("\n------------- Room Information -------------\n")
+        for room in rooms:
+            room.display_info()
+    else:
+        print("\nError: No Room Information Found.")
+
 def generate_reference_number():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
@@ -85,15 +324,6 @@ def view_check_in_records():
 
     if not found:
         print("\nError: Sorry, no record found for the provided reference number.")
-
-
-def view_rooms():
-    if rooms:
-        print("\n------------- Room Information -------------\n")
-        for room in rooms:
-            room.display_info()
-    else:
-        print("\nError: No Room Information Found.")
 
 def load_room_status():
     global rooms
@@ -136,237 +366,13 @@ def staff_portal():
         choice = input("\nChoose an option: ")
 
         if choice == '1':
-            while True:
-                if not rooms:
-                    print("\nError: Sorry No Room Record Information. Cannot be Check In")
-                    break
-
-                while True:
-                    guest_name = input("\nEnter Guest Name: ")
-                    if guest_name.replace(" ", "").isalpha():
-                        break
-                    else:
-                        print("\nError: Name must only contain alphabetic characters.")
-
-                while True:
-                    contact_number = input("\nEnter Contact number (11 digits): ")
-                    if len(contact_number) == 11 and contact_number.isdigit():
-                        break
-                    else:
-                        print("\nError: Please enter a valid 11-digit contact number.")
-
-                while True:
-                    address = input("\nEnter Address: ")
-                    if address.replace(" ", "").isalpha():
-                        break
-                    else:
-                        print("\nError: Name must only contain alphabetic characters.")
-
-                while True:
-                    email = input("\nEnter Email Address: ")
-                    if email.endswith("@gmail.com"):
-                        break
-                    else:
-                        print("\nError: Sorry, is it's not a valid Gmail Address. Please try again.")
-
-                while True:
-                    try:
-                        room_number = int(input("\nEnter Room Number to Check In: "))
-
-                        room = None
-                        for r in rooms:
-                            if r.room_number == room_number:
-                                room = r
-                                break
-
-                        if room:
-                            if room.is_available:
-                                while True:
-                                    check_in_day = input("\nEnter Arrival Date (MM/DD/YYYY) in Numerical: ")
-
-                                    try:
-                                        check_in_day = datetime.strptime(f"{check_in_day}","%m/%d/%Y")
-                                        today = datetime.now().date()
-
-                                        if check_in_day.date() < today:
-                                            print("\nError: Invalid input. Please enter a future date, not a past date.")
-
-                                        else:
-                                            break
-
-                                    except ValueError:
-                                        print("\nError: Invalid day format. Please use (MM/DD/YYYY) in numerical.")
-
-                                while True:
-                                    try:
-                                        check_in_hour_input = int(input("\nEnter Check in Hour (1-12): "))
-
-                                        if 1 <= check_in_hour_input <= 12:
-                                            am_pm = input("\nEnter it is AM or PM?: ").strip().upper()
-
-                                            if am_pm in ["AM", "PM"]:
-                                                hour = check_in_hour_input
-                                                if am_pm == "AM" and hour == 12:
-                                                    hour = 12
-                                                elif am_pm == "PM" and hour != 12:
-                                                    hour += 12
-
-                                                check_in_time = check_in_day.replace(hour=hour, minute=0)
-                                                check_in_time_str = check_in_time.strftime(f"%m/%d/%Y %I:%M %p")
-                                                break
-
-                                            else:
-                                                print("\nError: Invalid AM/PM input. Please enter 'AM' or 'PM'.")
-
-                                        else:
-                                            print("\nError: Invalid hour. Please enter a number between 1 and 12.")
-
-                                    except ValueError:
-                                        print("\nError: Invalid input. Please enter a number between 1 and 12 for hour.")
-
-                                while True:
-                                    try:
-                                        nights_stay = int(input("\nEnter How many days stay in the hotel?: "))
-                                        break
-
-                                    except ValueError:
-                                        print("\nError: Invalid input. Please enter numerical")
-
-                                reference_number = generate_reference_number()
-                                room.check_in(guest_name, check_in_time, nights_stay, reference_number)
-
-                                f = open("check_in.txt", "a", encoding="utf-8")
-                                f.write(f"Reference Number: {reference_number}\nGuest: {guest_name}\nContact No: {contact_number}\nAddress: {address}\nEmail: {email}\nRoom: {room_number}\nRoom Type: {room.room_type}\nCheck In/Time Arrival: {check_in_time_str}\nNight Stay: {nights_stay}\nTotal Price: ₱ {room.total_price}\n\n")
-                                f.close()
-
-                                print(f"\nReference Number: {reference_number}\nRoom {room_number} Booked.\nCheck-in/Time Arrival is: {check_in_time_str}.\nRoom Type: {room.room_type}\nNight Stay: {nights_stay}\nTotal Price is: ₱ {room.total_price}")
-
-                                break
-                            else:
-                                print(f"\nRoom {room_number} is already booked.")
-                        else:
-                            print("\nInvalid room number.")
-
-                    except ValueError:
-                        print("\nError: Please enter a valid room number")
-                break
+            check_in()
 
         elif choice == '2':
-            while True:
-                if not rooms:
-                    print("\nError: Sorry No Room Record Information. Cannot be Cancel Booking")
-                    break
-
-                print("\n------------- Room Information -------------\n")
-                for room in rooms:
-                    room.display_info()
-
-                try:
-                    room_number = int(input("\nEnter Room Number to Cancel Booking: "))
-
-                    room = None
-                    for r in rooms:
-                        if r.room_number == room_number:
-                            room = r
-                            break
-
-                    if room:
-                        if not room.is_available:
-                            cancel_booking = datetime.now()
-                            cancel_booking_time = cancel_booking.strftime("%m/%d/%Y %I:%M %p")
-
-                            f = open("cancel_booking.txt", "a")
-                            f.write(f"Room: {room_number}\nCancellation Time: {cancel_booking_time}\n\n")
-                            f.close()
-
-                            room.check_out()
-                            print(f"\nRoom {room_number} has been Canceled.")
-                            print(f"Cancellation Time: {cancel_booking_time}.")
-
-                        else:
-                            print(f"\nRoom {room_number} is already available.")
-                            break
-
-                    else:
-                        print("\nError: Invalid room number.")
-
-                except ValueError:
-                    print("\nError: Please enter a valid room number.")
-
-                while True:
-                    print("\nDo you want to continue?")
-                    print("1. Yes")
-                    print("2. No")
-
-                    again = input("\nChoose an option: ").strip()
-
-                    if again == '1':
-                        break
-
-                    elif again == '2':
-                        print("\nReturning to the main menu...")
-                        staff_portal()
-
-                    else:
-                        print("\nError: Invalid input. Please enter '1' to continue cancel booking or '2' to return to the main menu.")
+            cancel_booking()
 
         elif choice == '3':
-            while True:
-                if not rooms:
-                    print("\nError: Sorry No Room Record Information. Cannot be Check Out")
-                    break
-                print("\n------------- Room Information ------------\n")
-
-                for room in rooms:
-                    room.display_info()
-
-                try:
-                    room_number = int(input("\nEnter Room Number to Check Out: "))
-
-                    room = None
-                    for r in rooms:
-                        if r.room_number == room_number:
-                            room = r
-                            break
-
-                    if room:
-                        if not room.is_available:
-                            check_out_time = datetime.now()
-                            check_out_time_str = check_out_time.strftime("%m/%d/%Y %I:%M %p")
-
-                            f = open("check_out.txt", "a")
-                            f.write(f"Room: {room_number}\nCheck Out: {check_out_time_str}\n\n")
-                            f.close()
-
-                            room.check_out()
-
-                            print(f"\nRoom {room_number} has been checked out.")
-                            print(f"Check-out time: {check_out_time_str}.")
-                        else:
-                            print(f"\nRoom {room_number} is already available.")
-                            break
-                    else:
-                        print("\nError: Invalid room number.")
-
-                except ValueError:
-                    print("\nError: Please enter a valid room number.")
-
-                while True:
-                    print("\nDo you want to continue?")
-                    print("1. Yes")
-                    print("2. No")
-
-                    again = input("Choose an option: ").strip()
-
-                    if again == '1':
-                        break
-
-                    elif again == '2':
-                        print("\nReturning to the main menu...")
-                        staff_portal()
-
-                    else:
-                        print("\nError: Invalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
+            check_out()
 
         elif choice == '4':
             view_rooms()
