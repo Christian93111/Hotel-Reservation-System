@@ -53,7 +53,7 @@ def generate_reference_number():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 def view_check_in_records():
-    reference_number = input("\nEnter reference number to view check-in details: ").strip()
+    reference_number = input("\nEnter reference number: ").strip()
     found = False
 
     f = open("check_in.txt", "r", encoding="utf-8")
@@ -84,7 +84,7 @@ def view_check_in_records():
             break
 
     if not found:
-        print("\nSorry, no record found for the provided reference number.")
+        print("\nError: Sorry, no record found for the provided reference number.")
 
 
 def view_rooms():
@@ -93,7 +93,7 @@ def view_rooms():
         for room in rooms:
             room.display_info()
     else:
-        print("\nNo Room Information Found.")
+        print("\nError: No Room Information Found.")
 
 def load_room_status():
     global rooms
@@ -114,7 +114,8 @@ def load_room_status():
                 rooms.append(room)
 
             except (IndexError, ValueError):
-                print(f"\nSkipping invalid room entry: {line.strip()}")
+                # print(f"\nSkipping invalid room entry: {line.strip()}")
+                pass
 
     except FileNotFoundError:
         pass
@@ -137,7 +138,7 @@ def staff_portal():
         if choice == '1':
             while True:
                 if not rooms:
-                    print("\nSorry No Room Record Information. Cannot be Check In")
+                    print("\nError: Sorry No Room Record Information. Cannot be Check In")
                     break
 
                 while True:
@@ -145,28 +146,28 @@ def staff_portal():
                     if guest_name.replace(" ", "").isalpha():
                         break
                     else:
-                        print("\nName must only contain alphabetic characters.")
+                        print("\nError: Name must only contain alphabetic characters.")
 
                 while True:
                     contact_number = input("\nEnter Contact number (11 digits): ")
                     if len(contact_number) == 11 and contact_number.isdigit():
                         break
                     else:
-                        print("\nPlease enter a valid 11-digit contact number.")
+                        print("\nError: Please enter a valid 11-digit contact number.")
 
                 while True:
                     address = input("\nEnter Address: ")
                     if address.replace(" ", "").isalpha():
                         break
                     else:
-                        print("\nName must only contain alphabetic characters.")
+                        print("\nError: Name must only contain alphabetic characters.")
 
                 while True:
                     email = input("\nEnter Email Address: ")
                     if email.endswith("@gmail.com"):
                         break
                     else:
-                        print("\nSorry, is it's not a valid Gmail Address. Please try again.")
+                        print("\nError: Sorry, is it's not a valid Gmail Address. Please try again.")
 
                 while True:
                     try:
@@ -188,13 +189,13 @@ def staff_portal():
                                         today = datetime.now().date()
 
                                         if check_in_day.date() < today:
-                                            print("\nInvalid input. Please enter a future date, not a past date.")
+                                            print("\nError: Invalid input. Please enter a future date, not a past date.")
 
                                         else:
                                             break
 
                                     except ValueError:
-                                        print("\nInvalid day format. Please use (MM/DD/YYYY) in numerical.")
+                                        print("\nError: Invalid day format. Please use (MM/DD/YYYY) in numerical.")
 
                                 while True:
                                     try:
@@ -215,13 +216,13 @@ def staff_portal():
                                                 break
 
                                             else:
-                                                print("\nInvalid AM/PM input. Please enter 'AM' or 'PM'.")
+                                                print("\nError: Invalid AM/PM input. Please enter 'AM' or 'PM'.")
 
                                         else:
-                                            print("\nInvalid hour. Please enter a number between 1 and 12.")
+                                            print("\nError: Invalid hour. Please enter a number between 1 and 12.")
 
                                     except ValueError:
-                                        print("\nInvalid input. Please enter a number between 1 and 12 for hour.")
+                                        print("\nError: Invalid input. Please enter a number between 1 and 12 for hour.")
 
                                 while True:
                                     try:
@@ -229,7 +230,7 @@ def staff_portal():
                                         break
 
                                     except ValueError:
-                                        print("\nInvalid input. Please enter numerical")
+                                        print("\nError: Invalid input. Please enter numerical")
 
                                 reference_number = generate_reference_number()
                                 room.check_in(guest_name, check_in_time, nights_stay, reference_number)
@@ -247,13 +248,13 @@ def staff_portal():
                             print("\nInvalid room number.")
 
                     except ValueError:
-                        print("\nPlease enter a valid room number")
+                        print("\nError: Please enter a valid room number")
                 break
 
         elif choice == '2':
             while True:
                 if not rooms:
-                    print("\nSorry No Room Record Information. Cannot be Cancel Booking")
+                    print("\nError: Sorry No Room Record Information. Cannot be Cancel Booking")
                     break
 
                 print("\n------------- Room Information -------------\n")
@@ -287,10 +288,10 @@ def staff_portal():
                             break
 
                     else:
-                        print("\nInvalid room number.")
+                        print("\nError: Invalid room number.")
 
                 except ValueError:
-                    print("\nPlease enter a valid room number.")
+                    print("\nError: Please enter a valid room number.")
 
                 while True:
                     print("\nDo you want to continue?")
@@ -307,12 +308,12 @@ def staff_portal():
                         staff_portal()
 
                     else:
-                        print("\nInvalid input. Please enter '1' to continue cancel booking or '2' to return to the main menu.")
+                        print("\nError: Invalid input. Please enter '1' to continue cancel booking or '2' to return to the main menu.")
 
         elif choice == '3':
             while True:
                 if not rooms:
-                    print("\nSorry No Room Record Information. Cannot be Check Out")
+                    print("\nError: Sorry No Room Record Information. Cannot be Check Out")
                     break
                 print("\n------------- Room Information ------------\n")
 
@@ -345,10 +346,10 @@ def staff_portal():
                             print(f"\nRoom {room_number} is already available.")
                             break
                     else:
-                        print("\nInvalid room number.")
+                        print("\nError: Invalid room number.")
 
                 except ValueError:
-                    print("\nPlease enter a valid room number.")
+                    print("\nError: Please enter a valid room number.")
 
                 while True:
                     print("\nDo you want to continue?")
@@ -365,7 +366,7 @@ def staff_portal():
                         staff_portal()
 
                     else:
-                        print("\nInvalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
+                        print("\nError: Invalid input. Please enter '1' to continue check out or '2' to return to the main menu.")
 
         elif choice == '4':
             view_rooms()
@@ -378,7 +379,7 @@ def staff_portal():
             main.main_portal()
 
         else:
-            print("\nInvalid choice. Please try again.")
+            print("\nError: Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     staff_portal()
