@@ -57,7 +57,7 @@ def main_portal():
                 break
         f.close()
     except FileNotFoundError:
-        pass
+        print("\nError: Admin login file not found.")
 
     if not login_success:
         try:
@@ -69,7 +69,7 @@ def main_portal():
                     break
             f.close()
         except FileNotFoundError:
-            pass
+            print("\nError: Staff login file not found.")
 
     if login_success:
         print(f"\nLogin Success!\n\nWelcome {username}")
